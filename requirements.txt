@@ -6,4 +6,4 @@ streamlit
 openpyxl
 joblib
 xgboost
-tensorflow
+tensorflow==2.16.1
