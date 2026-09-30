@@ -1,13 +1,13 @@
 # 🦐 Shrimp Growth Prediction Studio
 
-A Streamlit web app that predicts shrimp weight from pond water-quality parameters using six trained machine-learning models (Random Forest, XGBoost, ANN, SVR, Decision Tree, Linear Regression). Each prediction is compared with the closest real record in the dataset.
+A Streamlit web app that predicts shrimp weight from pond water-quality parameters using five trained machine-learning models (Random Forest, XGBoost, SVR, Decision Tree, Linear Regression). Each prediction is compared with the closest real record in the dataset.
 
 ## What's in this folder
 
 | File / folder | Purpose |
 |---|---|
 | `app.py` | The whole application |
-| `model/` | The 6 trained models the app loads |
+| `model/` | The 5 trained models the app loads |
 | `shrimp dataset.xlsx` | The dataset (used for value ranges and comparisons) |
 | `requirements.txt` | Exact library versions the app was tested with |
 | `.python-version` | Python version (3.12) |
@@ -68,7 +68,3 @@ Notes:
 | Port already in use | `streamlit run app.py --server.port 8502` |
 | Page looks plain / fonts differ | Fonts load from Google Fonts, so an internet connection is needed. The app still works without one |
 | `Dataset not found` | `shrimp dataset.xlsx` must sit next to `app.py` |
-
-## Optional: enable the ANN model
-
-TensorFlow is left out of `requirements.txt` so the app installs quickly and deploys reliably on free hosting. Without it, the 5 other models work and the ANN model is hidden. To enable it locally, run `pip install tensorflow` (Python 3.11–3.12 recommended).
