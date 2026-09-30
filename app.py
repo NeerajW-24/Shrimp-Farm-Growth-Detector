@@ -30,127 +30,422 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-html, body, [data-testid="stAppViewContainer"] {
-    background: #070b14;
-    color: #f8fafc;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+    --ocean-900: #06283d;
+    --ocean-700: #0b4f6c;
+    --ocean-500: #0fa3b1;
+    --ocean-300: #7fd8e0;
+    --ocean-100: #e3f6f8;
+    --coral: #ff6b57;
+    --coral-soft: #ffe3de;
+    --sun: #ffb703;
+    --mint: #2ec4a6;
+    --ink: #0b2a3c;
+    --muted: #5b7486;
+    --card: rgba(255, 255, 255, 0.86);
 }
 
+html, body, [class*="css"], [data-testid="stAppViewContainer"] {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--ink);
+}
+
+h1, h2, h3, h4, .hero-card h1, .section-head h2 {
+    font-family: 'Poppins', 'Inter', sans-serif !important;
+    letter-spacing: -0.01em;
+}
+
+[data-testid="stAppViewContainer"] {
+    background:
+        radial-gradient(900px 500px at 8% -5%, rgba(15, 163, 177, 0.18), transparent 60%),
+        radial-gradient(700px 480px at 100% 10%, rgba(255, 107, 87, 0.14), transparent 60%),
+        radial-gradient(800px 500px at 50% 110%, rgba(127, 216, 224, 0.30), transparent 60%),
+        #f3fafc;
+}
+
+[data-testid="stHeader"] { background: transparent; }
+#MainMenu, footer { visibility: hidden; }
+
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0b1020 0%, #05070d 100%);
+    background: linear-gradient(180deg, #06283d 0%, #0b4f6c 100%);
 }
 
 .block-container {
-    padding-top: 1.1rem;
-    padding-bottom: 2rem;
+    padding-top: 1.2rem;
+    padding-bottom: 3rem;
     max-width: 1180px;
 }
 
+/* ---------- Hero ---------- */
 .hero-card {
-    padding: 1.15rem 1.2rem;
-    border-radius: 1.25rem;
-    border: 1px solid rgba(129, 140, 248, 0.25);
-    background: linear-gradient(135deg, #0f172a 0%, #111827 45%, #1f1147 100%);
-    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+    position: relative;
+    overflow: hidden;
+    padding: 2.2rem 2.2rem 4.2rem 2.2rem;
+    border-radius: 1.75rem;
+    background: linear-gradient(135deg, #06283d 0%, #0b4f6c 50%, #0fa3b1 100%);
+    box-shadow: 0 24px 50px rgba(6, 40, 61, 0.28);
+    color: #ffffff;
 }
 
+.hero-card::before {
+    content: "";
+    position: absolute;
+    width: 340px; height: 340px;
+    right: -80px; top: -120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 183, 3, 0.45), transparent 65%);
+}
+
+.hero-card::after {
+    content: "";
+    position: absolute;
+    width: 260px; height: 260px;
+    left: -90px; bottom: -130px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 107, 87, 0.40), transparent 65%);
+}
+
+.hero-inner { position: relative; z-index: 2; display: flex; align-items: center; gap: 1.5rem; justify-content: space-between; flex-wrap: wrap; }
+.hero-text { flex: 1 1 380px; }
+
 .hero-kicker {
-    font-size: 0.82rem;
+    display: inline-block;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #f87171;
-    margin-bottom: 0.35rem;
+    color: #06283d;
+    background: linear-gradient(90deg, #ffb703, #ffd166);
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    margin-bottom: 0.9rem;
 }
 
 .hero-card h1 {
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1.05;
-    margin: 0 0 0.55rem 0;
-    color: #f8fafc;
+    font-size: clamp(2rem, 4.4vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.08;
+    margin: 0 0 0.7rem 0;
+    color: #ffffff;
+}
+
+.hero-card h1 span {
+    background: linear-gradient(90deg, #ffd166, #ff8a7a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .hero-card p {
     margin: 0;
-    font-size: 1rem;
-    color: #e2e8f0;
+    font-size: 1.04rem;
+    line-height: 1.55;
+    color: #d8f1f5;
+    max-width: 560px;
+}
+
+.hero-art {
+    flex: 0 0 auto;
+    width: 190px; height: 190px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.06));
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    backdrop-filter: blur(6px);
+    font-size: 6.2rem;
+    animation: floaty 4.5s ease-in-out infinite;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+}
+
+@keyframes floaty {
+    0%, 100% { transform: translateY(0) rotate(-4deg); }
+    50% { transform: translateY(-12px) rotate(4deg); }
+}
+
+.hero-waves {
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 70px; z-index: 1;
 }
 
 .step-strip {
-    margin-top: 0.9rem;
+    margin-top: 1.3rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 0.55rem;
+    gap: 0.6rem;
 }
 
 .step-pill {
-    padding: 0.42rem 0.7rem;
+    padding: 0.5rem 0.95rem;
     border-radius: 999px;
-    background: rgba(99, 102, 241, 0.18);
-    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    color: #ffffff;
     font-size: 0.9rem;
     font-weight: 600;
+    backdrop-filter: blur(4px);
+    transition: transform .2s ease, background .2s ease;
 }
+.step-pill:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.28); }
 
+/* ---------- Quick stats ---------- */
+.stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.9rem; margin: 1.1rem 0 0.4rem; }
+.stat-tile {
+    background: var(--card);
+    border: 1px solid rgba(15, 163, 177, 0.18);
+    border-radius: 1.1rem;
+    padding: 0.9rem 1.1rem;
+    box-shadow: 0 10px 24px rgba(11, 79, 108, 0.08);
+    display: flex; align-items: center; gap: 0.8rem;
+}
+.stat-tile .ico { font-size: 1.7rem; }
+.stat-tile .num { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.25rem; color: var(--ocean-700); line-height: 1.1; }
+.stat-tile .lbl { font-size: 0.8rem; color: var(--muted); }
+
+/* ---------- Section headers ---------- */
+.section-head {
+    display: flex; align-items: center; gap: 0.9rem;
+    margin: 2.1rem 0 0.4rem 0;
+}
+.section-head .num {
+    flex: 0 0 auto;
+    width: 2.5rem; height: 2.5rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 0.85rem;
+    font-family: 'Poppins', sans-serif; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, var(--coral), #ff9a5a);
+    box-shadow: 0 8px 18px rgba(255, 107, 87, 0.35);
+}
+.section-head h2 { margin: 0; padding: 0; font-size: 1.45rem; font-weight: 700; color: var(--ocean-900); }
+.section-sub { color: var(--muted); margin: 0 0 0.9rem 3.4rem; font-size: 0.95rem; }
+
+/* ---------- Cards & metrics ---------- */
 div[data-testid="stMetric"] {
-    background: linear-gradient(180deg, #0b1020 0%, #111827 100%);
-    border: 1px solid rgba(96, 165, 250, 0.16);
-    border-radius: 1rem;
-    padding: 0.95rem 1rem;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    background: var(--card);
+    border: 1px solid rgba(15, 163, 177, 0.18);
+    border-top: 5px solid var(--ocean-500);
+    border-radius: 1.1rem;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 12px 28px rgba(11, 79, 108, 0.10);
+    transition: transform .2s ease, box-shadow .2s ease;
 }
+div[data-testid="stMetric"]:hover { transform: translateY(-4px); box-shadow: 0 18px 34px rgba(11, 79, 108, 0.16); }
+div[data-testid="stMetric"] label, div[data-testid="stMetric"] [data-testid="stMetricLabel"] { color: var(--muted) !important; font-weight: 600; }
+div[data-testid="stMetricValue"] { font-family: 'Poppins', sans-serif; font-weight: 700; color: var(--ocean-900); }
 
-.small-note {
-    color: #cbd5e1;
-    font-size: 0.92rem;
-}
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) div[data-testid="stMetric"] { border-top-color: var(--sun); }
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) div[data-testid="stMetric"] { border-top-color: var(--coral); }
+
+.small-note { color: var(--muted); font-size: 0.92rem; }
 
 .value-badge {
     margin: 0.2rem 0 0.55rem 0;
     display: inline-block;
-    padding: 0.28rem 0.58rem;
+    padding: 0.28rem 0.7rem;
     border-radius: 999px;
-    background: rgba(147, 51, 234, 0.18);
-    color: #f8fafc;
-    border: 1px solid rgba(244, 114, 182, 0.22);
-    font-size: 0.84rem;
+    background: var(--ocean-100);
+    color: var(--ocean-700);
+    border: 1px solid rgba(15, 163, 177, 0.35);
+    font-size: 0.82rem;
     font-weight: 700;
-}
-
-section[data-testid="stSidebar"] .stCheckbox label,
-section[data-testid="stSidebar"] .stSelectbox label,
-section[data-testid="stSidebar"] .stSlider label,
-section[data-testid="stSidebar"] .stNumberInput label {
-    color: #f8fafc !important;
-}
-
-div[data-baseweb="input"] input,
-div[data-baseweb="select"] > div,
-div[data-baseweb="slider"] {
-    background: #0b1020 !important;
-    color: #f8fafc !important;
-    border-color: rgba(96, 165, 250, 0.35) !important;
-}
-
-div[data-testid="stSlider"] [role="slider"] {
-    background: #ef4444 !important;
-    box-shadow: 0 0 0 0.25rem rgba(147, 51, 234, 0.18) !important;
 }
 
 .section-card {
     padding: 1rem 1.1rem;
-    border-radius: 1rem;
-    background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
-    border: 1px solid rgba(96, 165, 250, 0.14);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+    border-radius: 1.2rem;
+    background: var(--card);
+    border: 1px solid rgba(15, 163, 177, 0.18);
+    box-shadow: 0 12px 28px rgba(11, 79, 108, 0.10);
 }
 
-.section-card h3, .section-card p, .section-card label {
-    color: #f8fafc !important;
+/* ---------- Inputs ---------- */
+div[data-baseweb="input"], div[data-baseweb="select"] > div {
+    background: #ffffff !important;
+    border-radius: 0.8rem !important;
+    border-color: rgba(15, 163, 177, 0.4) !important;
+}
+div[data-baseweb="input"] input { color: var(--ink) !important; }
+div[data-baseweb="select"] > div:hover, div[data-baseweb="input"]:focus-within {
+    border-color: var(--coral) !important;
+    box-shadow: 0 0 0 3px rgba(255, 107, 87, 0.18) !important;
 }
 
+div[data-testid="stSlider"] [role="slider"] {
+    background: var(--coral) !important;
+    border: 3px solid #fff !important;
+    box-shadow: 0 4px 12px rgba(255, 107, 87, 0.5) !important;
+}
+div[data-testid="stSlider"] [data-baseweb="slider"] > div > div:first-child { background: rgba(15, 163, 177, 0.18) !important; }
+
+div[data-testid="stCheckbox"] label span { color: var(--ink) !important; font-weight: 500; }
+
+/* ---------- Alerts ---------- */
+div[data-testid="stAlert"] { border-radius: 1rem; border: none; box-shadow: 0 8px 20px rgba(11, 79, 108, 0.08); }
+
+/* ---------- Tables, expanders ---------- */
 div[data-testid="stDataFrame"] {
     border-radius: 1rem;
     overflow: hidden;
+    border: 1px solid rgba(15, 163, 177, 0.2);
+    box-shadow: 0 10px 24px rgba(11, 79, 108, 0.08);
+}
+div[data-testid="stExpander"] {
+    border-radius: 1rem;
+    border: 1px solid rgba(15, 163, 177, 0.2);
+    background: var(--card);
+    box-shadow: 0 8px 20px rgba(11, 79, 108, 0.06);
+}
+div[data-testid="stExpander"] summary { font-weight: 600; color: var(--ocean-700); }
+
+/* ---------- Footer ---------- */
+.app-footer {
+    margin-top: 3rem; padding: 1.2rem; text-align: center;
+    border-radius: 1.2rem;
+    background: linear-gradient(90deg, rgba(15,163,177,0.12), rgba(255,107,87,0.12));
+    color: var(--muted); font-size: 0.9rem;
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+
+def section_header(number: int | str, title: str, subtitle: str = "") -> None:
+    sub = f"<p class='section-sub'>{subtitle}</p>" if subtitle else ""
+    st.markdown(
+        f"<div class='section-head'><div class='num'>{number}</div><h2>{title}</h2></div>{sub}",
+        unsafe_allow_html=True,
+    )
+
+
+st.markdown(
+    """
+<style>
+/* ===== Extra motion & polish ===== */
+[data-testid="stAppViewContainer"]::before {
+    content: "";
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: linear-gradient(120deg, rgba(15,163,177,0.10), rgba(255,183,3,0.08), rgba(255,107,87,0.10), rgba(46,196,166,0.10));
+    background-size: 400% 400%;
+    animation: auroraShift 18s ease-in-out infinite;
+}
+@keyframes auroraShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* rising bubbles */
+.bubbles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bubbles span {
+    position: absolute; bottom: -60px; display: block;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(127,216,224,0.35));
+    border: 1px solid rgba(15,163,177,0.25);
+    animation: rise linear infinite;
+}
+.bubbles span:nth-child(1) { left: 6%;  width: 18px; height: 18px; animation-duration: 14s; animation-delay: 0s; }
+.bubbles span:nth-child(2) { left: 16%; width: 30px; height: 30px; animation-duration: 19s; animation-delay: 3s; }
+.bubbles span:nth-child(3) { left: 28%; width: 12px; height: 12px; animation-duration: 12s; animation-delay: 6s; }
+.bubbles span:nth-child(4) { left: 42%; width: 24px; height: 24px; animation-duration: 17s; animation-delay: 1s; }
+.bubbles span:nth-child(5) { left: 55%; width: 16px; height: 16px; animation-duration: 13s; animation-delay: 8s; }
+.bubbles span:nth-child(6) { left: 68%; width: 34px; height: 34px; animation-duration: 21s; animation-delay: 4s; }
+.bubbles span:nth-child(7) { left: 79%; width: 14px; height: 14px; animation-duration: 15s; animation-delay: 9s; }
+.bubbles span:nth-child(8) { left: 90%; width: 26px; height: 26px; animation-duration: 18s; animation-delay: 2s; }
+@keyframes rise {
+    0%   { transform: translateY(0) translateX(0) scale(0.8); opacity: 0; }
+    10%  { opacity: 0.9; }
+    50%  { transform: translateY(-55vh) translateX(24px) scale(1); }
+    100% { transform: translateY(-115vh) translateX(-18px) scale(1.1); opacity: 0; }
+}
+.block-container { position: relative; z-index: 1; }
+
+/* keyframes */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes popIn  { 0% { opacity: 0; transform: scale(0.85); } 70% { transform: scale(1.04); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes slideR { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+@keyframes pulseGlow { 0%,100% { box-shadow: 0 8px 18px rgba(255,107,87,0.35); } 50% { box-shadow: 0 8px 30px rgba(255,107,87,0.75); } }
+@keyframes waveMove { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes heroFlow { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+@keyframes swim { 0%,100% { transform: translateX(0) rotate(-6deg); } 50% { transform: translateX(-40px) rotate(6deg); } }
+
+/* hero */
+.hero-card { background-size: 200% 200%; animation: popIn .8s both, heroFlow 14s ease-in-out infinite .8s; }
+.hero-card h1 { animation: slideR .9s .15s both; }
+.hero-card p { animation: fadeUp .9s .3s both; }
+.hero-kicker { animation: fadeUp .7s both; }
+.step-pill { animation: fadeUp .7s both; }
+.step-pill:nth-child(1) { animation-delay: .5s; } .step-pill:nth-child(2) { animation-delay: .62s; }
+.step-pill:nth-child(3) { animation-delay: .74s; } .step-pill:nth-child(4) { animation-delay: .86s; }
+.hero-card h1 span { background-size: 200% auto; background-image: linear-gradient(90deg, #ffd166, #ff8a7a, #7fd8e0, #ffd166); animation: shimmer 6s linear infinite; }
+
+.hero-waves-wrap { position: absolute; left: 0; right: 0; bottom: 0; height: 70px; overflow: hidden; z-index: 1; }
+.hero-waves-wrap svg { position: absolute; bottom: 0; left: 0; width: 200%; height: 70px; animation: waveMove 11s linear infinite; }
+.hero-waves-wrap svg.slow { animation-duration: 19s; opacity: .55; }
+
+.sea-deco { position: absolute; z-index: 1; opacity: .9; }
+.sea-deco.fish1 { top: 18%; right: 26%; font-size: 1.6rem; animation: swim 9s ease-in-out infinite; }
+.sea-deco.fish2 { bottom: 26%; right: 6%; font-size: 1.3rem; animation: swim 12s ease-in-out infinite reverse; }
+.sea-deco.star  { bottom: 24%; left: 3%; font-size: 1.5rem; animation: floaty 6s ease-in-out infinite; }
+
+/* stat tiles */
+.stat-tile { animation: fadeUp .7s both; transition: transform .25s ease, box-shadow .25s ease; }
+.stat-tile:nth-child(2) { animation-delay: .12s; } .stat-tile:nth-child(3) { animation-delay: .24s; }
+.stat-tile:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 20px 36px rgba(11,79,108,.18); }
+.stat-tile .ico { display: inline-block; transition: transform .4s ease; }
+.stat-tile:hover .ico { transform: rotate(-12deg) scale(1.25); }
+
+/* section headers */
+.section-head { animation: slideR .6s both; }
+.section-head .num { animation: pulseGlow 3s ease-in-out infinite; }
+.section-sub { animation: fadeUp .7s .1s both; }
+.section-head h2::after {
+    content: ""; display: block; height: 4px; width: 56px; margin-top: 6px; border-radius: 4px;
+    background: linear-gradient(90deg, var(--coral), var(--sun), var(--ocean-500), var(--coral));
+    background-size: 200% 100%; animation: shimmer 4s linear infinite; transition: width .4s ease;
+}
+.section-head:hover h2::after { width: 120px; }
+
+/* metrics */
+div[data-testid="stMetric"] { position: relative; overflow: hidden; animation: popIn .6s both; }
+div[data-testid="stMetric"]::after {
+    content: ""; position: absolute; inset: 0; border-radius: 1.1rem; pointer-events: none;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.65) 50%, transparent 60%);
+    background-size: 250% 100%; background-position: 200% 0; transition: background-position .8s ease;
+}
+div[data-testid="stMetric"]:hover::after { background-position: -100% 0; }
+
+.section-card { animation: fadeUp .7s both; transition: transform .3s ease, box-shadow .3s ease; }
+.section-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(11,79,108,.16); }
+.value-badge { transition: transform .2s ease, background .2s ease, color .2s ease; }
+.value-badge:hover { transform: scale(1.06); background: var(--coral-soft); color: var(--coral); }
+
+/* smooth interactive elements */
+div[data-baseweb="input"], div[data-baseweb="select"] > div, div[data-testid="stSlider"] [role="slider"],
+div[data-testid="stExpander"], div[data-testid="stAlert"], div[data-testid="stDataFrame"] {
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+}
+div[data-testid="stSlider"] [role="slider"]:hover { transform: scale(1.35); }
+div[data-testid="stExpander"]:hover, div[data-testid="stDataFrame"]:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(11,79,108,.14); }
+div[data-testid="stAlert"] { animation: fadeUp .6s both; }
+div[data-testid="stPlotlyChart"] { animation: fadeUp .8s both; border-radius: 1.2rem; overflow: hidden; }
+
+div[data-testid="stSlider"] [data-baseweb="slider"] > div > div:nth-child(2) {
+    background: linear-gradient(90deg, var(--ocean-500), var(--coral)) !important;
+}
+
+div[data-testid="stCheckbox"] { transition: transform .2s ease; }
+div[data-testid="stCheckbox"]:hover { transform: translateX(4px); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--ocean-500), var(--coral)); border-radius: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.app-footer {
+    background-size: 200% 100%;
+    background-image: linear-gradient(90deg, rgba(15,163,177,.15), rgba(255,183,3,.15), rgba(255,107,87,.15), rgba(15,163,177,.15));
+    animation: fadeUp .8s both, shimmer 10s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 </style>
 """,
@@ -359,9 +654,10 @@ def render_parameters_section(
     feature_stats: dict[str, dict[str, float]],
     feature_cols: list[str],
 ) -> tuple[dict[str, float], list[str], bool]:
-    st.subheader("2. Select parameters")
-    st.caption(
-        "Choose the parameters you want to adjust, or select one record from the dataset and use its values."
+    section_header(
+        2,
+        "🧪 Select parameters",
+        "Choose the water-quality parameters you want to adjust, or pick one record from the dataset and use its values.",
     )
 
     use_exact_row, _, exact_row_values = render_exact_row_selector(df, feature_cols)
@@ -385,8 +681,11 @@ def render_inputs(
     selected_cols: list[str],
     exact_row_values: dict[str, float] | None = None,
 ) -> dict[str, float]:
-    st.subheader("3. Enter values")
-    st.caption("Use the slider or type a value directly. Parameters that are not selected stay at their typical values.")
+    section_header(
+        3,
+        "🎚️ Enter values",
+        "Use the slider or type a value directly. Parameters that are not selected stay at their typical values.",
+    )
 
     values: dict[str, float] = {}
     left_col, right_col = st.columns(2)
@@ -659,8 +958,8 @@ def render_trend_chart(
                 y=historical[weight_col],
                 mode="lines+markers",
                 name="Historical data",
-                line=dict(color="rgba(90, 110, 100, 0.5)", dash="dot"),
-                marker=dict(size=4, color="rgba(90, 110, 100, 0.45)"),
+                line=dict(color="rgba(11, 79, 108, 0.35)", dash="dot"),
+                marker=dict(size=4, color="rgba(11, 79, 108, 0.45)"),
             )
         )
 
@@ -670,7 +969,7 @@ def render_trend_chart(
             y=predicted_curve,
             mode="lines",
             name="Model prediction",
-            line=dict(color="#1b6b4b", width=4),
+            line=dict(color="#0fa3b1", width=4, shape="spline"),
         )
     )
 
@@ -680,31 +979,21 @@ def render_trend_chart(
             y=[current_prediction],
             mode="markers",
             name="Your current setting",
-            marker=dict(size=12, color="#e85d04", symbol="circle"),
+            marker=dict(size=15, color="#ff6b57", symbol="circle", line=dict(color="#ffffff", width=3)),
         )
     )
 
     figure.update_layout(
         margin=dict(t=50, l=20, r=20, b=20),
         height=420,
-        paper_bgcolor="#0b1020",
-        plot_bgcolor="#0f172a",
-        font=dict(color="#f8fafc"),
+        paper_bgcolor="rgba(255,255,255,0)",
+        plot_bgcolor="#f3fafc",
+        font=dict(color="#0b2a3c", family="Inter, sans-serif"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         xaxis_title=trend_feature,
         yaxis_title=weight_col.title(),
-        xaxis=dict(
-            color="#f8fafc",
-            gridcolor="rgba(148, 163, 184, 0.18)",
-            zerolinecolor="rgba(248, 250, 252, 0.25)",
-            tickfont=dict(color="#f8fafc"),
-        ),
-        yaxis=dict(
-            color="#f8fafc",
-            gridcolor="rgba(148, 163, 184, 0.18)",
-            zerolinecolor="rgba(248, 250, 252, 0.25)",
-            tickfont=dict(color="#f8fafc"),
-        ),
+        xaxis=dict(gridcolor="rgba(11, 79, 108, 0.10)", zerolinecolor="rgba(11, 79, 108, 0.2)"),
+        yaxis=dict(gridcolor="rgba(11, 79, 108, 0.10)", zerolinecolor="rgba(11, 79, 108, 0.2)"),
     )
     st.plotly_chart(figure, use_container_width=True, key=chart_key)
 
@@ -712,14 +1001,32 @@ def render_trend_chart(
 def main() -> None:
     st.markdown(
         """
+        <div class="bubbles"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
         <div class="hero-card">
-            <div class="hero-kicker">Shrimp growth analysis</div>
-            <h1>Prediction dashboard</h1>
-            <p>Select a model, choose the parameters you want to adjust, and review the prediction against the closest record in the dataset.</p>
-            <div class="step-strip">
-                <span class="step-pill">1. Pick a model</span>
-                <span class="step-pill">2. Select parameters</span>
-                <span class="step-pill">3. Review the result</span>
+            <div class="hero-inner">
+                <div class="hero-text">
+                    <div class="hero-kicker">🌊 Smart aquaculture</div>
+                    <h1>Shrimp Growth <span>Prediction Studio</span></h1>
+                    <p>Pick a model, tweak your pond's water conditions, and instantly see how heavy your shrimp are expected to grow, checked against real farm records.</p>
+                    <div class="step-strip">
+                        <span class="step-pill">① Pick a model</span>
+                        <span class="step-pill">② Select parameters</span>
+                        <span class="step-pill">③ Enter values</span>
+                        <span class="step-pill">④ Review the result</span>
+                    </div>
+                </div>
+                <div class="hero-art">🦐</div>
+            </div>
+            <span class="sea-deco fish1">🐟</span>
+            <span class="sea-deco fish2">🐠</span>
+            <span class="sea-deco star">⭐</span>
+            <div class="hero-waves-wrap">
+                <svg class="slow" viewBox="0 0 2880 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#f3fafc" d="M0,35 C240,80 480,0 720,30 C960,60 1200,10 1440,35 C1680,80 1920,0 2160,30 C2400,60 2640,10 2880,35 L2880,70 L0,70 Z"/>
+                </svg>
+                <svg viewBox="0 0 2880 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#f3fafc" d="M0,50 C300,10 560,70 820,45 C1080,20 1280,60 1440,50 C1740,10 2000,70 2260,45 C2520,20 2720,60 2880,50 L2880,70 L0,70 Z"/>
+                </svg>
             </div>
         </div>
         """,
@@ -731,6 +1038,17 @@ def main() -> None:
     except Exception as exc:
         st.error(str(exc))
         st.stop()
+
+    st.markdown(
+        f"""
+        <div class="stat-row">
+            <div class="stat-tile"><span class="ico">📊</span><div><div class="num">{len(df):,}</div><div class="lbl">Real farm records</div></div></div>
+            <div class="stat-tile"><span class="ico">🧬</span><div><div class="num">{len(discover_model_files())}</div><div class="lbl">AI models ready</div></div></div>
+            <div class="stat-tile"><span class="ico">💧</span><div><div class="num">{len(df.columns)}</div><div class="lbl">Data columns tracked</div></div></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     target_cols = target_columns(df)
     if not target_cols:
@@ -759,7 +1077,7 @@ def main() -> None:
             default_index = index
             break
 
-    st.markdown("### 1. Choose a model")
+    section_header(1, "🤖 Choose a model", "Not sure? Keep the default, Random Forest, which is a reliable all-rounder.")
     model_label = st.selectbox(
         "Choose model",
         [str(entry["label"]) for entry in available_entries],
@@ -797,7 +1115,7 @@ def main() -> None:
     actual_primary = float(closest_row[primary_label])
     signed_pct, abs_pct = percentage_difference(predicted_primary, actual_primary)
 
-    st.markdown("### 4. Prediction result")
+    section_header(4, "🦐 Prediction result", "Here is what the model expects, compared with the most similar real record.")
     top_left, top_mid, top_right = st.columns(3)
     with top_left:
         st.metric("Predicted weight", f"{predicted_primary:.3f}", delta=f"{signed_pct:+.1f}% versus the closest record")
@@ -839,8 +1157,7 @@ def main() -> None:
     )
 
     if show_live_graph and live_graph_feature is not None:
-        st.markdown("### Live graph")
-        st.caption("This graph updates with the current input values and selected parameter.")
+        section_header("📈", "Live graph", "This graph updates with the current input values and selected parameter.")
         st.markdown('<div class="section-card">', unsafe_allow_html=True)
         render_trend_chart(
             selected_model,
@@ -856,7 +1173,7 @@ def main() -> None:
         st.markdown('</div>', unsafe_allow_html=True)
 
     if show_detailed_analytics:
-        st.markdown("### Detailed analytics")
+        section_header("🔬", "Detailed analytics", "Compare every model side by side and explore trends.")
         comparison_df = compare_models(available_entries, loaded_models, input_frame, actual_primary, target_cols)
         st.dataframe(comparison_df, use_container_width=True, hide_index=True)
 
@@ -868,7 +1185,7 @@ def main() -> None:
                 help="This shows how the selected model changes when one selected parameter changes.",
             )
             show_original = st.checkbox("Show historical data points", value=True)
-            st.markdown('<div class="hero-card">', unsafe_allow_html=True)
+            st.markdown('<div class="section-card">', unsafe_allow_html=True)
             render_trend_chart(
                 selected_model,
                 df,
@@ -887,6 +1204,11 @@ def main() -> None:
 
         with st.expander("Data preview", expanded=False):
             st.dataframe(df.head(20), use_container_width=True)
+
+    st.markdown(
+        "<div class='app-footer'>🦐 Shrimp Farm Helper · Predictions are estimates, so use them alongside your own farm judgement.</div>",
+        unsafe_allow_html=True,
+    )
 
 
 if __name__ == "__main__":
