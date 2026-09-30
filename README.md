@@ -10,7 +10,7 @@ A Streamlit web app that predicts shrimp weight from pond water-quality paramete
 | `model/` | The 6 trained models the app loads |
 | `shrimp dataset.xlsx` | The dataset (used for value ranges and comparisons) |
 | `requirements.txt` | Exact library versions the app was tested with |
-| `.python-version` | Python version (3.13) |
+| `.python-version` | Python version (3.12) |
 | `.streamlit/config.toml` | Theme settings |
 | `run_app.bat` / `run_app.sh` | One-click launchers (Windows / Mac-Linux) |
 | `Copy_of_shrimp.ipynb`, `modellsss/` | Training notebook and older models (not used by the app) |
@@ -19,13 +19,13 @@ A Streamlit web app that predicts shrimp weight from pond water-quality paramete
 
 ## Run it on your own computer
 
-**Requirement:** Python 3.13 (3.11 or 3.12 should also work). Download it from python.org and tick "Add Python to PATH" during install.
+**Requirement:** Python 3.12 (3.11 or 3.13 should also work). Download it from python.org and tick "Add Python to PATH" during install.
 
 **Easiest way**
 - Windows: double-click `run_app.bat`
 - Mac/Linux: run `./run_app.sh` in a terminal
 
-The first run takes a few minutes to install libraries (TensorFlow is large). After that it starts in seconds and opens at <http://localhost:8501>.
+The first run takes a few minutes to install libraries (XGBoost and scikit-learn are the larger ones). After that it starts in seconds and opens at <http://localhost:8501>.
 
 **Manual way** (Windows PowerShell shown)
 ```powershell
@@ -44,11 +44,11 @@ Stop the app with `Ctrl + C` in the terminal.
 1. Put the folder on GitHub: create a repository and upload everything except `.venv/` (the included `.gitignore` already skips it).
 2. Go to <https://share.streamlit.io> and sign in with GitHub.
 3. Click **Create app** → choose the repository, branch `main`, main file `app.py`.
-4. Open **Advanced settings** → set **Python version to 3.13** (or the highest available that matches) → **Deploy**.
+4. Open **Advanced settings** → set **Python version to 3.12** → **Deploy**.
 5. After a few minutes you get a public link like `https://your-app.streamlit.app` that anyone can open.
 
 Notes:
-- The free tier has about 1 GB of memory. This app fits, but TensorFlow makes the first start slow.
+- The free tier has about 1 GB of memory. This app fits comfortably.
 - Apps that get no visitors for several days go to sleep. Visiting the link and clicking "Wake up" brings it back.
 - Other hosts (Hugging Face Spaces with the Streamlit SDK, Render, Railway) also work. Use `streamlit run app.py --server.port $PORT --server.address 0.0.0.0` as the start command.
 
@@ -68,3 +68,7 @@ Notes:
 | Port already in use | `streamlit run app.py --server.port 8502` |
 | Page looks plain / fonts differ | Fonts load from Google Fonts, so an internet connection is needed. The app still works without one |
 | `Dataset not found` | `shrimp dataset.xlsx` must sit next to `app.py` |
+
+## Optional: enable the ANN model
+
+TensorFlow is left out of `requirements.txt` so the app installs quickly and deploys reliably on free hosting. Without it, the 5 other models work and the ANN model is hidden. To enable it locally, run `pip install tensorflow` (Python 3.11–3.12 recommended).
