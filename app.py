@@ -1039,16 +1039,7 @@ def main() -> None:
         st.error(str(exc))
         st.stop()
 
-    st.markdown(
-        f"""
-        <div class="stat-row">
-            <div class="stat-tile"><span class="ico">📊</span><div><div class="num">{len(df):,}</div><div class="lbl">Real farm records</div></div></div>
-            <div class="stat-tile"><span class="ico">🧬</span><div><div class="num">{len(discover_model_files())}</div><div class="lbl">AI models ready</div></div></div>
-            <div class="stat-tile"><span class="ico">💧</span><div><div class="num">{len(df.columns)}</div><div class="lbl">Data columns tracked</div></div></div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    stats_slot = st.empty()
 
     target_cols = target_columns(df)
     if not target_cols:
@@ -1070,6 +1061,17 @@ def main() -> None:
     if not available_entries:
         st.error("None of the models could be loaded.")
         st.stop()
+
+    stats_slot.markdown(
+        f"""
+        <div class="stat-row">
+            <div class="stat-tile"><span class="ico">📊</span><div><div class="num">{len(df):,}</div><div class="lbl">Real farm records</div></div></div>
+            <div class="stat-tile"><span class="ico">🧬</span><div><div class="num">{len(available_entries)}</div><div class="lbl">AI models ready</div></div></div>
+            <div class="stat-tile"><span class="ico">💧</span><div><div class="num">{len(df.columns)}</div><div class="lbl">Data columns tracked</div></div></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     default_index = 0
     for index, entry in enumerate(available_entries):
