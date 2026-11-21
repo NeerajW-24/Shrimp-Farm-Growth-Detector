@@ -612,6 +612,136 @@ def render_parameter_selector(feature_cols: list[str]) -> list[str]:
     return feature_cols if select_all else selected
 
 
+@st.cache_data(show_spinner=False)
+def compute_permutation_importance(
+    _model,
+    model_label: str,
+    df: pd.DataFrame,
+    model_features: tuple[str, ...],
+    base_features: tuple[str, ...],
+    target_cols: tuple[str, ...],
+    repeats: int = 30,
+) -> dict[str, float]:
+    """How much the model's error grows when one base parameter is shuffled.
+
+    Works the same way for every model type and is independent of each
+    parameter's units, so values can be compared fairly. Engineered columns
+    (Temp_DO, pH_Ammonia) are rebuilt after shuffling, so their effect is
+    credited back to the parameters they are made from.
+    """
+    weight_col = primary_target_label(list(target_cols))
+    data = df.dropna(subset=list(base_features) + [weight_col]).reset_index(drop=True)
+    if data.empty:
+        return {feature: 0.0 for feature in base_features}
+
+    y_true = data[weight_col].to_numpy(dtype=float)
+
+    def error_for(frame: pd.DataFrame) -> float:
+        prepared = add_engineered_features(frame.copy(), list(model_features))
+        for feature in model_features:
+            if feature not in prepared.columns:
+                prepared[feature] = 0.0
+        prepared = prepared.reindex(columns=list(model_features))
+        predicted = normalize_prediction_array(predict_array(_model, prepared))
+        if predicted.shape[0] != len(y_true):
+            predicted = predicted.reshape(len(y_true), -1)
+        column = 0
+        if predicted.shape[1] > 1:
+            column = next((i for i, c in enumerate(target_cols) if c.lower() == "weight"), 0)
+        return float(np.mean((predicted[:, column] - y_true) ** 2))
+
+    base_frame = data[list(base_features)].astype(float)
+    baseline_error = error_for(base_frame)
+    rng = np.random.default_rng(42)
+
+    importance: dict[str, float] = {}
+    for feature in base_features:
+        increases = []
+        for _ in range(repeats):
+            shuffled = base_frame.copy()
+            shuffled[feature] = rng.permutation(shuffled[feature].to_numpy())
+            increases.append(error_for(shuffled) - baseline_error)
+        importance[feature] = max(float(np.mean(increases)), 0.0)
+    return importance
+
+
+def render_feature_importance(
+    importance: dict[str, float],
+    selected_cols: list[str],
+    model_label: str,
+) -> None:
+    st.markdown("#### 🏆 Which selected parameter matters most?")
+
+    scores = {col: importance.get(col, 0.0) for col in selected_cols}
+    total = sum(scores.values())
+
+    if len(selected_cols) < 2:
+        st.info("Select at least two parameters to compare their importance.")
+        return
+    if total <= 0:
+        st.info(f"{model_label} shows no measurable effect from the selected parameters on the training data.")
+        return
+
+    shares = pd.Series({col: value / total * 100 for col, value in scores.items()}).sort_values(ascending=False)
+
+    top = shares.head(2)
+    card_cols = st.columns(2)
+    for rank, (col_name, share) in enumerate(top.items()):
+        medal = "🥇" if rank == 0 else "🥈"
+        note = f"{share:.1f}% of the influence" if share >= 0.05 else "No measurable effect in this model"
+        card_cols[rank].metric(f"{medal} #{rank + 1} most important", col_name, note, delta_color="off")
+
+    balanced = st.toggle(
+        "Balanced scale",
+        value=True,
+        key="importance_balanced_scale",
+        help="On: bar lengths use a square-root scale so smaller parameters stay visible next to a dominant one. "
+        "Off: bar lengths are the true proportions. The % labels are always the true share.",
+    )
+
+    ordered = shares.sort_values(ascending=True)
+    bar_lengths = np.sqrt(ordered.to_numpy()) if balanced else ordered.to_numpy()
+    if bar_lengths.max() > 0:
+        bar_lengths = bar_lengths / bar_lengths.max() * 100
+
+    top_names = set(top.index)
+    colors = ["#ff6b57" if name in top_names else "rgba(15, 163, 177, 0.55)" for name in ordered.index]
+
+    figure = go.Figure(
+        go.Bar(
+            x=bar_lengths,
+            y=list(ordered.index),
+            orientation="h",
+            marker=dict(color=colors, line=dict(width=0)),
+            text=[f"{value:.1f}%" for value in ordered.to_numpy()],
+            textposition="outside",
+            cliponaxis=False,
+            hovertemplate="%{y}<br>Share of influence: %{text}<extra></extra>",
+        )
+    )
+    figure.update_layout(
+        margin=dict(t=10, l=10, r=60, b=30),
+        height=max(220, 56 * len(ordered) + 60),
+        paper_bgcolor="rgba(255,255,255,0)",
+        plot_bgcolor="#f3fafc",
+        font=dict(color="#0b2a3c", family="Inter, sans-serif"),
+        showlegend=False,
+        xaxis=dict(
+            title="Relative importance (balanced scale)" if balanced else "Relative importance",
+            range=[0, 112],
+            showticklabels=False,
+            gridcolor="rgba(11, 79, 108, 0.10)",
+            zeroline=False,
+        ),
+        yaxis=dict(automargin=True),
+    )
+    st.plotly_chart(figure, use_container_width=True, key="feature_importance_chart")
+    st.caption(
+        f"Importance for {model_label}: how much the prediction error grows when a parameter's values are shuffled "
+        "across the real records. Shares are compared only among the parameters you selected and add up to 100%."
+    )
+
+
 def render_exact_row_selector(
     df: pd.DataFrame, feature_cols: list[str]
 ) -> tuple[bool, pd.DataFrame | None, dict[str, float] | None]:
@@ -653,6 +783,8 @@ def render_parameters_section(
     df: pd.DataFrame,
     feature_stats: dict[str, dict[str, float]],
     feature_cols: list[str],
+    importance: dict[str, float],
+    model_label: str,
 ) -> tuple[dict[str, float], list[str], bool]:
     section_header(
         2,
@@ -663,6 +795,7 @@ def render_parameters_section(
     use_exact_row, _, exact_row_values = render_exact_row_selector(df, feature_cols)
     if use_exact_row:
         selected_cols = feature_cols
+        render_feature_importance(importance, selected_cols, model_label)
         input_values = render_inputs(feature_stats, feature_cols, selected_cols, exact_row_values)
         return input_values, selected_cols, True
 
@@ -671,6 +804,7 @@ def render_parameters_section(
         st.warning("Select at least one parameter to continue.")
         st.stop()
 
+    render_feature_importance(importance, selected_cols, model_label)
     input_values = render_inputs(feature_stats, feature_cols, selected_cols)
     return input_values, selected_cols, False
 
@@ -1105,7 +1239,20 @@ def main() -> None:
         st.stop()
 
     feature_stats = compute_feature_stats(df, numeric_cols)
-    input_values, selected_cols, _ = render_parameters_section(df, feature_stats, numeric_cols)
+    try:
+        importance = compute_permutation_importance(
+            selected_model,
+            model_label,
+            df,
+            tuple(model_features),
+            tuple(numeric_cols),
+            tuple(target_cols),
+        )
+    except Exception:
+        importance = {}
+    input_values, selected_cols, _ = render_parameters_section(
+        df, feature_stats, numeric_cols, importance, model_label
+    )
     input_frame = build_input_frame(input_values, model_features)
 
     predicted_raw = predict_array(selected_model, input_frame)
